@@ -14,18 +14,27 @@ public class Matrix {
 		// structure the matrix based on the constrains and variables
 		 mat = new int[consts + 1][vars * 2 + 1]; // add 1 to both dimensions for the objective function
 	}
-	
+	public static void main(String[] args) {
+		Matrix m = new Matrix();
+		m.temp();
+		m.createMatrix();
+	}
+
 	private void createMatrix() {
 		int j = 0;
-		for (int i = 0; i <= consts) {
+		in.nextLine();
+		//for (int i = 0; i <= consts; i++) {
 			System.out.println("Enter the first constraint:");
-			var con = in.nextLine();
-			String[] temp = String.split("*.+"); // place the constraint coefficients in the simplex matrix
-			mat[i][j] = 
+			String con = in.nextLine();
+			String[] temp = con.split("['*'||'+'||'-']+"); // place the constraint coefficients in the simplex matrix
+			for (String var : temp)
+				System.out.println(var);
+			//mat[i][j] =
 			j++;
-		}
+		//}
+		
 	}
 	
-	public void findSolution();
+	//public void findSolution();
 
 }
