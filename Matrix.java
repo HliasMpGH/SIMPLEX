@@ -25,24 +25,22 @@ public class Matrix {
 		// edw prwta tha gemisw thn teleytaia grammh(obj synarthsh)
 		//setObjFunction();
 		for (int i = 0; i < consts; i++) {
-			int j = 0;
 			System.out.println("Enter constraint number " + (i + 1) +":");
 			String con = in.nextLine();
-			coef = con.split("[\\W]*['*'][\\W]*\\w[\\d]+[\\W]*"); // place the constraint coefficients in the simplex matrix
-			for (String var : coef) {
-				mat[i][j] = Integer.valueOf(var);
-				j++;
+			coef = con.split("[\\W]*['*'][\\W]*\\w[\\d]+[\\W]*"); // get the constraint coefficients & values
+			mat[i][vars + consts + 1] = Integer.valueOf(coef[coef.length - 1]); // fill the last collumn of the simplex matrix with the constrain values
+			for (int j = 0; j < coef.length - 1; j++) {
+				mat[i][j] = Integer.valueOf(coef[j]); // place the coefficients in the matrix
 			}
 			mat[i][vars + i] = 1; // 1 for the surplus variables
-			String[] temp = con.split("['>'|'<'][\\W]*"); // place the constraint value in the simplex matrix
-			constValue = temp[1];
-			mat[i][vars + consts + 1] = Integer.valueOf(constValue); // last collumn // provlima: vazei thn timh tou periorismoy se ena komvo pou den prepei
-			for (int[] var : mat) {
-				for (int var2 : var) {
-					System.out.println(var2);
-				}
+		}
+		
+		for (int[] var : mat) {
+			for (int var2 : var) {
+				System.out.println(var2);
 			}
 		}
+		
 
 
 		
@@ -50,23 +48,32 @@ public class Matrix {
 	public void setObjFunction() {
 		System.out.print("Insert the objective function: ");
 		String of = in.nextLine();
-		//of = of
-		String[] coef = of.split("[\\W]*['*'][\\W]*Z\\w[\\d]+[\\W]*");
+		// [\\W]*['*'][\\W]*\\w[\\d]+[\\W]*
+		// [Z|z][\\W]*['='][\\W]*['*'][\\W]*\\w[\\d]+[\\W]*
+		/*
+		  TO DO:
+		   regex gia obj function
+		*/
+		String[] coef = of.split("[Zz][\\W]*=[\\W]*['*'][\\W]*\\w[\\d]+[\\W]");
 		for (String var : coef) {
 			System.out.println(var);
 		}
 	}
+	Matrix() {
 
+	}
 
 
 	// main, will be on Decision class
 	public static void main(String[] args) {
+		/*
 		System.out.print("Insert the number of variables that will be used: ");
 		int vars = in.nextInt();
 		System.out.print("and the number of the constraints: ");
 		int consts = in.nextInt();
-		Matrix m = new Matrix(vars, consts);
-		m.fillMatrix();
+		*/
+		Matrix m = new Matrix();
+		m.setObjFunction();
 		//m.setConstraints();
 	//	m.fillMatrix();
 	}
