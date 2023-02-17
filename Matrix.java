@@ -20,8 +20,7 @@ public class Matrix {
 
 	private void fillMatrix() {
 		String[] coef;
-		String constValue;
-		in.nextLine(); 
+		in.nextLine();
 		// edw prwta tha gemisw thn teleytaia grammh(obj synarthsh)
 		//setObjFunction();
 		for (int i = 0; i < consts; i++) {
