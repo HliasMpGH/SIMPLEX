@@ -5,20 +5,17 @@ import java.util.Scanner;
 public class Matrix {
 	static Scanner in = new Scanner(System.in);
 	private double[][] mat;
-	private int vars;
-	private int consts;
-	private Map<String, Double> sol; 
+	private int vars; // number of variables
+	private int consts; // number of constraints
+	private String of; // objective function
+	private Map<String, Double> sol; // the solutions
 	
-	Matrix(int vars, int consts) {
+	Matrix(int vars, int consts, String of) {
 		this.vars = vars;
 		this.consts = consts;
+		this.of = of;
 		setMatrix();
-	}
-
-	Matrix() {
-		this.vars = 1;
-		this.consts = 1;
-		setMatrix();
+		setObjFunction();
 	}
 
 	// structures the matrix based on the constrains and variables
@@ -31,7 +28,7 @@ public class Matrix {
 		sol.put("P", 0.0);
 	}
 
-	private void fillMatrix() {
+	public void fillMatrix() {
 		String[] coef;
 		in.nextLine();
 		setObjFunction();
@@ -59,8 +56,6 @@ public class Matrix {
 	}
 
 	public void setObjFunction() {
-		System.out.print("Insert the objective function(in the form of 'Z/z = ...'): ");
-		String of = in.nextLine();
 		// provlima : an exei kena anamesa stous telestes to regex split dhmiourgei provlima (tha exei ena keno meta apo ton arithmo)
 		String[] coef = of.split("[Z|z][\\W]*['='][\\W]*|['*'][\\W]*\\w[\\d]+[\\W]*"); // get the OF coefficients
 		for (int j = 1; j < coef.length; j++) {
@@ -69,17 +64,7 @@ public class Matrix {
 		mat[mat.length - 1][vars + consts] = 1; // 1 for the Z coefficent
 	}
 
-	// main, will be on Decision class
-	public static void main(String[] args) {
-		System.out.print("Insert the number of variables that will be used: ");
-		int vars = in.nextInt();
-		System.out.print("and the number of the constraints: ");
-		int consts = in.nextInt();
-		Matrix m = new Matrix(vars, consts);
-		m.fillMatrix();
-		m.findSolution();
-		//m.printM();
-	}
+
 
 
 	
