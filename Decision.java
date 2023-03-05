@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 
 
 /* TO DO:
- * start menu(insertion of problem, with checkboxes for max, min)
+ * make Textfields for each constraint 
  */
 
 
