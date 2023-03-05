@@ -30,7 +30,6 @@ public class Matrix {
 
 	public void fillMatrix() {
 		String[] coef;
-		in.nextLine();
 		setObjFunction();
 		for (int i = 0; i < consts; i++) {
 			System.out.println("Enter constraint number " + (i + 1) +":");
@@ -64,71 +63,110 @@ public class Matrix {
 		mat[mat.length - 1][vars + consts] = 1; // 1 for the Z coefficent
 	}
 
-
-
-
-	
 	public void findSolution() {
-		int lastR = mat.length - 1; // the last row of the matrix
-		int lastC = mat[0].length -1; // the last collumn of the matrix
-		boolean negNums;
 		do {
-			System.out.println("AGAIN");
-			negNums = false;
-			int pivotCol = 0; // the pivot collumn(variable)
-			int pivotRow = 0; // the pivot row(surplus variable)
 			// find the pivot collumn
-			double min = Double.MAX_VALUE;
-			for (int j = 0; j < vars; j++) {
-				if (mat[lastR][j] < min) {
-					min = mat[lastR][j];
-					pivotCol = j;
-				}
-			}
+			int pivotCol = findPivotCol();
 			System.out.println("PIVOT COL: " + pivotCol);
+
 			// find the pivot row
-			min = Double.MAX_VALUE;
-			for (int i = 0; i < consts; i++) {
-				Double temp = mat[i][lastC] / mat[i][pivotCol];
-				if (temp < min) {
-					min = temp;
-					pivotRow = i;
-				}
-			}
+			int pivotRow = findPivotRow(pivotCol);
 			System.out.println("PIVOT ROW: " + pivotRow);
+
 			double pivotElement = mat[pivotRow][pivotCol];
 			System.out.println("PIVOT ELEMENT: " + pivotElement);
+
 			printM();
 			// divide by the pivot element(if the pivot element is already 1, skip this step)
 			if (pivotElement != 1.0) {
-				for (int j = 0; j <= lastC; j++) {
-					mat[pivotRow][j] /= pivotElement;
-				}
+				divideByPivot(pivotRow, pivotElement);
 			}
 			printM();
+
 			// make the values of the pivot collumn all 0 by adding/subtracting the pivot row
-			for (int i = 0; i <= lastR; i++) {
-				if (i == pivotRow) continue; // skip the pivot row
-				double celement = mat[i][pivotCol];
-				if (celement == 0) continue; // if the element is already 0 skip this row
-				for (int j = 0; j <= lastC; j++) {
-					mat[i][j] -= celement * mat[pivotRow][j]; // since the pivot element is 1 at this point, this expression makes the the pivot collumn 0
+			makePivotCol0(pivotRow, pivotCol);
+			printM();
+
+			// each time this step is reached, check for solutions and save them
+			saveSol();
+
+		} while (checkNegNums()); // if there are still negative numbers in the bottom row, keep looping
+		// print the best strategy
+		printStrat();
+	}
+
+	private int findPivotCol() {
+		int pivotCol = 0; // the pivot collumn(variable)
+		int lastR = mat.length - 1; // the last row of the matrix
+		double min = Double.MAX_VALUE;
+		for (int j = 0; j < vars; j++) {
+			if (mat[lastR][j] < min) {
+				min = mat[lastR][j];
+				pivotCol = j;
+			}
+		}
+		return pivotCol;
+	}
+
+	private int findPivotRow(int pivotCol) {
+		int pivotRow = 0; // the pivot row(surplus variable)
+		int lastC = mat[0].length -1; // the last collumn of the matrix
+		double min = Double.MAX_VALUE;
+		for (int i = 0; i < consts; i++) {
+			Double temp = mat[i][lastC] / mat[i][pivotCol];
+			if (temp < min) {
+				min = temp;
+				pivotRow = i;
+			}
+		}
+		return pivotRow;
+	}
+
+	private void divideByPivot(int pivotRow, double pivotElement) {
+		int lastC = mat[0].length -1; // the last collumn of the matrix
+		for (int j = 0; j <= lastC; j++) {
+			mat[pivotRow][j] /= pivotElement;
+		}
+	}
+
+	private void makePivotCol0(int pivotRow, int pivotCol) {
+		int lastR = mat.length - 1; // the last row of the matrix
+		int lastC = mat[0].length -1; // the last collumn of the matrix
+		for (int i = 0; i <= lastR; i++) {
+			if (i == pivotRow) continue; // skip the pivot row
+			double celement = mat[i][pivotCol];
+			if (celement == 0) continue; // if the element is already 0 skip this row
+			for (int j = 0; j <= lastC; j++) {
+				mat[i][j] -= celement * mat[pivotRow][j]; // since the pivot element is 1 at this point, this expression makes the the pivot collumn 0
+			}
+		}
+	}
+
+	private void saveSol() {
+		// PROVLIMA: oxi poly asfalhs tropos gia na kserw poies einai oi vasikes metavlites(exoun topothetithei stis grammes tou matrix)
+		int lastR = mat.length - 1; // the last row of the matrix
+		int lastC = mat[0].length -1; // the last collumn of the matrix
+		for (int j = 0; j < vars; j++) {
+			for (int i = 0; i < consts; i++) {
+				if (mat[i][j] == 1){
+					sol.put(String.valueOf(j + 1), mat[i][lastC]); // save this solution
 				}
 			}
-			printM();
-			System.out.println(mat[pivotRow][lastC]);
-			// PROVLIMA: oxi poly asfalhs tropos gia na kserw poies einai oi vasikes metavlites(exoun topothetithei stis grammes tou matrix)
-			for (int j = 0; j < vars; j++) {
-				for (int i = 0; i < consts; i++)
-					if (mat[i][j] == 1){
-						sol.put(String.valueOf(j + 1), mat[i][lastC]); // save this solution
-					}
-			}
-			sol.put("P", mat[lastR][lastC]); // save OF value with this solution
-			for (int j = 0; j <= lastC; j++) {
-				if (mat[lastR][j] < 0) negNums = true; // if there are still neg numbers, keep doing the same procedure
-			}
-		} while (negNums);
+		}
+		sol.put("P", mat[lastR][lastC]); // save OF value with this solution
+	}
+
+	private boolean checkNegNums() {
+		boolean negNums = false;
+		int lastR = mat.length - 1; // the last row of the matrix
+		int lastC = mat[0].length -1; // the last collumn of the matrix
+		for (int j = 0; j <= lastC; j++) {
+			if (mat[lastR][j] < 0) negNums = true;
+		}
+		return negNums;
+	}
+
+	public void printStrat() {
 		System.out.println("THE BEST STRATEGY: ");
 		for (Map.Entry<String, Double> bsol : sol.entrySet()) {
 			if (bsol.getKey() == "P") continue;
@@ -136,4 +174,5 @@ public class Matrix {
 		}
 		System.out.println("and the (maximazed)solution would be " + sol.get("P"));
 	}
+
 }
