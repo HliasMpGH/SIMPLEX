@@ -27,20 +27,18 @@ public class Matrix {
 		}
 		sol.put("P", 0.0);
 	}
-
-	public void fillMatrix() {
+	int i = 0; // gia na kseroyme poion periorismo diatrexoume aythn thn stigmh
+	public void fillMatrix(String con) {
 		String[] coef;
-		setObjFunction();
-		for (int i = 0; i < consts; i++) {
-			System.out.println("Enter constraint number " + (i + 1) +":");
-			String con = in.nextLine();
+	//	for (int i = 0; i < consts; i++) {
 			coef = con.split("[\\W]*['*'][\\W]*\\w[\\d]+[\\W]*"); // get the constraint coefficients & values
 			mat[i][vars + consts + 1] = Integer.valueOf(coef[coef.length - 1]); // fill the last collumn of the simplex matrix with the constraint values
 			for (int j = 0; j < coef.length - 1; j++) {
 				mat[i][j] = Integer.valueOf(coef[j]); // place the coefficients in the matrix
 			}
 			mat[i][vars + i] = 1; // 1 for the surplus variables
-		}
+			i++;
+	//	}
 		printM();
 	}
 
@@ -173,6 +171,10 @@ public class Matrix {
 			System.out.println("the var number " + bsol.getKey() + " should be " + bsol.getValue());
 		}
 		System.out.println("and the (maximazed)solution would be " + sol.get("P"));
+	}
+
+	public Map<String, Double> getSols() {
+		return sol;
 	}
 
 }

@@ -1,13 +1,13 @@
 import java.awt.*;
 import javax.swing.*;
-
-
+import java.util.HashMap;
+import java.util.Map;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
 /* TO DO:
- * make Textfields for each constraint 
+ * make final solution visible on frame
  */
 
 
@@ -62,6 +62,9 @@ public class Decision {
         int vars;
         int consts;
         String of;
+        JTextField cons; // textfield of constraints
+        int i = -1; // for placing the constraints in the matrix
+        Matrix m;
 
         @Override
 		public void actionPerformed(ActionEvent e) {
@@ -86,10 +89,29 @@ public class Decision {
                 ofButton = true;
                 field3.setEnabled(false);
             } else if (e.getSource() == continueButton) {
-                Matrix m = new Matrix(vars, consts, of);
+                m = new Matrix(vars, consts, of);               
 
-                m.fillMatrix();
-                m.findSolution();
+                continueButton.setEnabled(false);
+                cons = new JTextField("type the constraints");
+                cons.setBounds(200, 450, 140, 30);
+                cons.addActionListener(this);
+                frame.add(cons);
+            } else if (e.getSource() == cons) {
+                m.fillMatrix(cons.getText());
+                cons.setText("");
+                if (m.i == consts) { // disable the button and find solution when the user finished inputing the constraints
+                    cons.setEnabled(false);
+                    m.findSolution();
+                    Map<String, Double> sol = m.getSols();
+                    for (Map.Entry<String, Double> bsol : sol.entrySet()) {
+                        if (bsol.getKey() == "P") continue;
+                        JLabel solution = new JLabel(bsol.getKey());
+                        solution.setBackground(Color.BLACK);
+                        solution.setBounds(10, 450, 140,140);
+                        frame.add(solution);
+                    }
+                }
+                    
             }
             // check if all 3 boxed are filled
             if (mMbutton && vButton && cButton && ofButton) {
