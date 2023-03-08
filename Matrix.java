@@ -90,7 +90,7 @@ public class Matrix {
 
 		} while (checkNegNums()); // if there are still negative numbers in the bottom row, keep looping
 		// print the best strategy
-		printStrat();
+	//	printStrat();
 	}
 
 	private int findPivotCol() {

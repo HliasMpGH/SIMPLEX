@@ -19,6 +19,7 @@ public class Decision {
         JFrame frame;
         Panel p;
         JPanel clearP;
+        JPanel endScreen;
 
         Frame() {
             frame = new JFrame("SIMPLEX");
@@ -40,6 +41,10 @@ public class Decision {
             clearP = new JPanel();
             clearP.setBounds(0,0,560, 650);
             clearP.setBackground(new Color(130, 209, 121));
+
+            endScreen = new JPanel();
+            endScreen.setBounds(0,0,560, 650);
+            endScreen.setBackground(new Color(130, 209, 121));
 
             button = new JButton("DECIDE");
 
@@ -65,6 +70,7 @@ public class Decision {
         JTextField cons; // textfield of constraints
         int i = -1; // for placing the constraints in the matrix
         Matrix m;
+        
 
         @Override
 		public void actionPerformed(ActionEvent e) {
@@ -89,9 +95,8 @@ public class Decision {
                 ofButton = true;
                 field3.setEnabled(false);
             } else if (e.getSource() == continueButton) {
-                m = new Matrix(vars, consts, of);               
-
-                continueButton.setEnabled(false);
+                m = new Matrix(vars, consts, of);          
+                
                 cons = new JTextField("type the constraints");
                 cons.setBounds(200, 450, 140, 30);
                 cons.addActionListener(this);
@@ -99,17 +104,61 @@ public class Decision {
             } else if (e.getSource() == cons) {
                 m.fillMatrix(cons.getText());
                 cons.setText("");
-                if (m.i == consts) { // disable the button and find solution when the user finished inputing the constraints
-                    cons.setEnabled(false);
+                if (m.i == consts) { // disable the button, textfield and find solution when user finished inputing the constraints
+                    frame.setContentPane(endScreen);
                     m.findSolution();
                     Map<String, Double> sol = m.getSols();
+                    JLabel solution;
+                    JLabel valueOfSol;
+
+                    
+                    JLabel stratTxt = new JLabel("Optimal strategy:");
+                    stratTxt.setBounds(170, 5, 500,500);
+                    stratTxt.setFont(new Font("Arial", Font.PLAIN, 30));
+
+                    JLabel varsTitle = new JLabel("Variables|");
+                    varsTitle.setBounds(35, 65, 500,500);
+                    varsTitle.setFont(new Font("Arial", Font.PLAIN, 30));
+
+                    JLabel valsTitle = new JLabel("|Values|");
+                    valsTitle.setBounds(170, 65, 500,500);
+                    valsTitle.setFont(new Font("Arial", Font.PLAIN, 30));
+
+                    JLabel zValueTitle = new JLabel("|Solution");
+                    zValueTitle.setBounds(280, 65, 500,500);
+                    zValueTitle.setFont(new Font("Arial", Font.PLAIN, 30));
+
+                    // value of final solution
+                    JLabel zValue = new JLabel(String.valueOf(sol.get("P")));
+                    zValue.setBounds(290, 100, 500,500);
+                    zValue.setFont(new Font("Arial", Font.PLAIN, 30));
+                    
+                    //values of variables
+                    int yaxis = 100; // to know where the text is gonna be posistioned
                     for (Map.Entry<String, Double> bsol : sol.entrySet()) {
                         if (bsol.getKey() == "P") continue;
-                        JLabel solution = new JLabel(bsol.getKey());
-                        solution.setBackground(Color.BLACK);
-                        solution.setBounds(10, 450, 140,140);
+                        solution = new JLabel();
+                        solution.setText(bsol.getKey());                
+                        solution.setFont(new Font("Arial", Font.PLAIN, 30));
+                        solution.setBounds(85, yaxis, 500,500);
+                        
+                        valueOfSol = new JLabel();
+                        valueOfSol.setText(String.valueOf(bsol.getValue()));
+                        valueOfSol.setFont(new Font("Arial", Font.PLAIN, 30));
+                        valueOfSol.setBounds(200, yaxis, 500,500);
+                        yaxis += 30; // increase the y-axis pixels
+                        
                         frame.add(solution);
+                        frame.add(valueOfSol);
+                        //JOptionPane.showMessageDialog(null, bsol.getValue(),"Best Strategy", JOptionPane.INFORMATION_MESSAGE);
                     }
+                    
+
+                    frame.add(zValueTitle);
+                    frame.add(valsTitle);
+                    frame.add(stratTxt);
+                    frame.add(zValue);
+                    frame.add(varsTitle);
                 }
                     
             }
